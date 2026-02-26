@@ -648,6 +648,9 @@ Rails.application.routes.draw do
     post 'onboarding', to: 'onboarding#create'
   end
 
+  # Landing page contact form
+  post '/page/contact', to: 'page_contacts#create'
+
   # ---------------------------------------------------------------------
   # Routes for swagger docs
   get '/swagger/*path', to: 'swagger#respond'

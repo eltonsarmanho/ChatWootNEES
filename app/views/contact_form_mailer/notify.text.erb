@@ -1,0 +1,13 @@
+Nova mensagem do Formulário de Contato
+========================================
+
+Nome:      <%= @nome %>
+E-mail:    <%= @email %>
+<% if @telefone.present? %>Telefone:  <%= @telefone %>
+<% end %>Assunto:   <%= @assunto %>
+
+Mensagem:
+<%= @mensagem %>
+
+----------------------------------------
+Protocolo: #GP-<%= @protocolo %>

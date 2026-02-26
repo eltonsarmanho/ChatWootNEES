@@ -1924,26 +1924,25 @@
             </div>
           </div>
         </div>
-        <form class="lp-form lp-animate lp-animate-delay-1"
-          onsubmit="event.preventDefault();alert('Mensagem enviada com sucesso! Protocolo: #GP-' + Math.floor(Math.random()*90000+10000));">
+        <form class="lp-form lp-animate lp-animate-delay-1" id="lp-contact-form">
           <div class="lp-form-row">
             <div>
               <label for="nome">Nome completo</label>
-              <input type="text" id="nome" placeholder="Seu nome completo" required />
+              <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required />
             </div>
             <div>
               <label for="email">E-mail</label>
-              <input type="email" id="email" placeholder="seu@email.com" required />
+              <input type="email" id="email" name="email" placeholder="seu@email.com" required />
             </div>
           </div>
           <div class="lp-form-row">
             <div>
               <label for="telefone">Telefone</label>
-              <input type="tel" id="telefone" placeholder="(82) 99999-0000" />
+              <input type="tel" id="telefone" name="telefone" placeholder="(82) 99999-0000" />
             </div>
             <div>
               <label for="assunto">Assunto</label>
-              <select id="assunto" required>
+              <select id="assunto" name="assunto" required>
                 <option value="">Selecione...</option>
                 <option>Dúvida</option>
                 <option>Solicitação</option>
@@ -1954,9 +1953,54 @@
             </div>
           </div>
           <label for="mensagem">Mensagem</label>
-          <textarea id="mensagem" placeholder="Descreva sua necessidade em detalhes..." required></textarea>
-          <button type="submit" class="lp-form-submit">Enviar mensagem</button>
+          <textarea id="mensagem" name="mensagem" placeholder="Descreva sua necessidade em detalhes..." required></textarea>
+          <button type="submit" class="lp-form-submit" id="lp-form-btn">Enviar mensagem</button>
+          <p id="lp-form-feedback" style="display:none;margin-top:12px;font-size:14px;font-family:'Rawline',sans-serif;"></p>
         </form>
+        <script>
+          document.getElementById('lp-contact-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var btn = document.getElementById('lp-form-btn');
+            var feedback = document.getElementById('lp-form-feedback');
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+            feedback.style.display = 'none';
+
+            var body = new URLSearchParams({
+              nome: document.getElementById('nome').value,
+              email: document.getElementById('email').value,
+              telefone: document.getElementById('telefone').value,
+              assunto: document.getElementById('assunto').value,
+              mensagem: document.getElementById('mensagem').value
+            });
+
+            fetch('/page/contact', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: body.toString()
+            })
+              .then(function (res) { return res.json(); })
+              .then(function (data) {
+                if (data.protocolo) {
+                  feedback.style.color = '#168821';
+                  feedback.textContent = '✅ Mensagem enviada com sucesso! Protocolo: #GP-' + data.protocolo;
+                  document.getElementById('lp-contact-form').reset();
+                } else {
+                  feedback.style.color = '#e53e3e';
+                  feedback.textContent = '⚠️ ' + (data.error || 'Erro ao enviar. Tente novamente.');
+                }
+              })
+              .catch(function () {
+                feedback.style.color = '#e53e3e';
+                feedback.textContent = '⚠️ Falha na conexão. Tente novamente.';
+              })
+              .finally(function () {
+                btn.disabled = false;
+                btn.textContent = 'Enviar mensagem';
+                feedback.style.display = 'block';
+              });
+          });
+        </script>
       </div>
     </section>
 
